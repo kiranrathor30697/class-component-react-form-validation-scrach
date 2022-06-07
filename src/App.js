@@ -1,13 +1,17 @@
+import { faCoffee, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import './App.css';
 export default class App extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       email:'',
       password:"",
       emailError:"",
-      passwordError:""
+      passwordError:"",
+      type:"password",
+      icon:faEyeSlash,
     }
   }
 
@@ -30,6 +34,7 @@ export default class App extends Component {
         });
       }
     } 
+
     handleChange(){
       this.validation();
       // console.log('okokok');
@@ -39,7 +44,7 @@ export default class App extends Component {
           emailError:" ",
           passwordError:" "
         });
-      }else if(this.state.email.includes('@') || this.state.email.includes('')){
+      }else if(this.state.email.includes('@')){
           this.setState({
             ...this.state,
             emailError:" "
@@ -47,17 +52,42 @@ export default class App extends Component {
       }else if(this.state.password < 5){
         this.setState({
           ...this.state,
-          passwordError:" "
+          passwordError:""
         });
       }
+      
     }
+// ----------Password Hide Show -----------------------------------------------------
 
+    iconClick(){
+      // console.warn("ok");
+      // console.log(e);
+
+      if(this.state.type === "password"){
+        this.setState({
+          ...this.state,
+          icon:faEye,
+          type:"text"
+        })
+      }else{
+        this.setState({
+          ...this.state,
+          icon:faEyeSlash,
+          type:"password"
+        })
+      }
+      
+      // console.log(this.state.type)
+      
+      
+    }
 
   formSubmited(e){
     // alert('submitted')
   // console.log(e);
   e.preventDefault();
   this.validation();
+  
   }
   
 
@@ -68,23 +98,28 @@ export default class App extends Component {
           <h4 className='text-white'>Form Validation</h4><br />
           {/* {console.log(this.state)} */}
           <input 
-            type="text" 
+            type="text"
             name="email"
             className="form-control email" 
-            placeholder="Please Enter Your Email" 
+            placeholder="Email" 
             onChange={(e)=>{this.handleChange(this.setState({email:e.target.value}))}} 
           />
 
           <div style={{color: 'red',fontSize:"16px" }}>{this.state.emailError}</div><br />
+          <div className='z_index'>
+              <input 
+                type={this.state.type}
+                name="password" 
+                className="form-control password" 
+                placeholder="Password" 
+                onChange={(e)=>{this.handleChange(this.setState({password:e.target.value}))}} 
+                
+              />
+              <span className='FontAwesomeIcon' onClick={()=>{this.iconClick()}}>
+                  <FontAwesomeIcon width="20" className='iconShow' icon={this.state.icon} />
+              </span>
+            </div>
 
-          <input 
-            type="password" 
-            name="password" 
-            className="form-control password" 
-            placeholder="Please Enter Your Password" 
-            onChange={(e)=>{this.handleChange(this.setState({password:e.target.value}))}} 
-
-          />
 
           <div style={{color: 'red',fontSize:"16px" }}>{this.state.passwordError}</div><br />
           
@@ -96,3 +131,5 @@ export default class App extends Component {
 }
 
 // value="" onChange={handleChange} 
+// placeholder=" &#xf007;Email" 
+
