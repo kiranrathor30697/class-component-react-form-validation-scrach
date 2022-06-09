@@ -2,16 +2,30 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import './App.css';
+import { ValidatetionMessage } from './ErrMsg';
 
-export default class FormValidation extends Component {
+
+  //  function ValidatetionMessage (props) {
+  //       if(props.valid){
+  //         console.log(props.msg);
+  //           return(<div>{props.msg}</div>);
+  //       }else{
+  //           return null;
+  //       }
+  //   }
+export default class OnchangeValidation extends Component {
     state = {
           email:'',
+          emailValid:false,
           password:"",
+          passwordValid:false,
           type:"password",
           icon:faEyeSlash,
-          errors:{
-            emailLength:'',
-            passwordLength:""
+        //   btn:false,
+          formValid:false,
+          formErr:{
+            email:'',
+            password:''
           }
       }
 
@@ -42,100 +56,115 @@ export default class FormValidation extends Component {
       }
     }
 
-    formSubmit = ()=>{
-        const {email,password} = this.state;
-        let isValid = true;
-
-
-        
-
-        if(!email.length && !password.length){
-          this.setState({
+    validateForm =()=>{
+        const {emailValid,passwordValid} = this.state;
+        this.setState({
             ...this.state,
-            emailLength:"Please Enter Email",
-            passwordLength:"Please Enter Password "
-          }) 
-           isValid = false;
-        }else{
+            formValid:emailValid && passwordValid
+        })
+    }
 
-          if(!email.length && password.length){
-            this.setState({
-              ...this.state,
-              emailLength:"Please Enter Email",
-              passwordLength:""
-            })
-          }
 
-          if(email.length && !password.length){
-            this.setState({
-              ...this.state,
-              emailLength:"",
-              passwordLength:"Please Enter Password "
-            })
-          }
+    updateEmail = (email)=>{
+        this.setState({...this.state,email},()=>{this.validateEmail()});
+    }
 
-          if(email.length && password.length){
-            this.setState({
-              ...this.state,
-              emailLength:"",
-              passwordLength:""
-            })
-          }
+    validateEmail = ()=>{
+        const {email} = this.state;
+        let formErr;
+        let emailValid = true;
+         formErr = {...this.state,formErr}
+        if(!email.length){
+            emailValid = false;
+            formErr.email = "Please Enter Email"
         }
+        this.setState({email:email,formErr:formErr},()=>{this.validateForm()});
+        console.log(this.state.formErr.email)
+    }
+
+
+    updatePassword = (password)=>{
+        this.setState({...this.state,password},()=>{this.validatePassword()});
+    }
+
+    validatePassword = ()=>{
+        const {password} = this.state;
+        let formErr;
+        let passwordValid = true;
+         formErr = {...this.state,formErr}
+        if(!password.length){
+            passwordValid = false;
+            formErr.password = "Please Enter password"
+        }
+        this.setState({password:password,formErr:formErr},()=>{this.validateForm()});
+        console.log(this.state.formErr.password)
       }
 
 
     onSubmit(e){
-    //   console.warn("submit");
         e.preventDefault();
-        const isValid = this.formSubmit();
-        console.log(this.state)
-
     }
 
-    onChange(e){
-
-        const {name,value} = e.target;
-        const {email,password} = this.state;
-        let isValid = true;
-
-        this.setState({[name]:value});
-
-    }
   render() {
     return (
       <div className='App App-header'>
          <form className="offSet-1 w-25 p-3 mt-5 bg-dark rounded" onSubmit={(e)=>{this.onSubmit(e)}}>
           <h4 className='text-white'>Form Validation</h4><br />
-          {/* {console.log(state)} */}
+          {/* {console.log(this.state)} */}
+
           <input 
             type="text"
             name="email"
             className="form-control email" 
             placeholder="Email" 
-            onChange={(e)=>{this.onChange(e)}} 
+            value={this.state.value}
+            onChange={(e)=>{this.updateEmail(e)}} 
           />
 
-          <div style={{color: 'red',fontSize:"16px" }}>{this.state.emailLength}</div><br />
+
+          <div style={{color: 'red ',fontSize:"16px" }}>
+              {/* {this.state.formErr.email} */}
+              <ValidatetionMessage valid={this.state.emailValid} msg={this.state.formErr.email} />
+              {/* {this.props.msg} */}
+         </div><br />
+
+
           <div className='z_index'>
               <input 
                 type={this.state.type}
                 name="password" 
                 className="form-control password" 
                 placeholder="Password"
-                onChange={(e)=>{this.onChange(e)}} 
+                value={this.state.value}
+                onChange={(e)=>{this.updatePassword(e)}} 
               />
-              
+
+
               <span className='FontAwesomeIcon' onClick={()=>{this.iconClick()}}>
                   <FontAwesomeIcon width="20" className='iconShow' icon={this.state.icon} />
               </span>
             </div>
 
 
-          <div style={{color: 'red',fontSize:"16px" }}>{this.state.passwordLength}</div><br />
-          
-          <button className="fluid btn btn-success">Submit</button>
+          <div style={{color: 'red',fontSize:"16px" }}>
+                {/* {this.state.formErr.password} */}
+              {/* <ValidatetionMessage valid={this.state.passwordValid} msg={this.state.formErr.password} /> */}
+         </div><br />  
+          <button className="fluid btn btn-success" >Submit</button>
+          {/* {this.state.map()}
+          {console.log(this.state.formErr)}
+          {console.log(typeof(this.state))} */}
+
         </form>
+          {Object.keys(ValidatetionMessage).map((cv, i) => {
+          if(ValidatetionMessage[cv].length > 0){
+            return (
+              <p key={i}>{cv} {ValidatetionMessage[cv]}</p>
+            )        
+          } else {
+            return 'dgbvvvvvvvvvvvvvv';
+          }
+        })}
       </div>
     );
   }
